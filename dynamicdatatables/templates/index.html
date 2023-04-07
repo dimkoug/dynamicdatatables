@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<div class="container rounded shadow">
+    <div class="row py-2 mt-2">
+        <div class="col">
+            <label for="apps" class="form-label">Apps</label>
+            <select class="form-control" name="apps" id="apps"></select>
+        </div>
+        <div class="col">
+            <label for="models" class="form-label">Models</label>
+            <select class="form-control" name="models" id="models"></select>
+        </div>
+        <div class="col">
+            <label for="fields" class="form-label">Fields</label>
+            <select class="form-control" name="fields" id="fields" multiple></select>
+        </div>
+    </div>
+    <div class="row py-2 mt-2">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button id="dtable" class="btn btn-primary">Generate datatable</button>
+          </div>
+    </div>
+
+    <div class="row py-2 mt-2">
+        <div class="col">
+            <div id="result">
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
