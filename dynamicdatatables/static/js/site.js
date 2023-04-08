@@ -92,6 +92,8 @@
             $('#table').DataTable({
                 destroy: true,
                 processing: true,
+                autoWidth: true,
+                scrollX: true,
                 ajax: {
                     url : '/dtables/',
                     data: {"format":"datatables","model":model,"app":app,"fields":fields_data},
