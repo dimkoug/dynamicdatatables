@@ -2,8 +2,6 @@ from django.apps import apps
 from django.http import JsonResponse
 
 
-
-
 def get_all_models(request):
     all_models = apps.get_models()
     models = []
@@ -22,26 +20,16 @@ def get_apps(request):
     app_configs = apps.get_app_configs()
     apps_data = []
     for app_config in app_configs:
-        apps_data.append(app_config.label)
-    for app in apps_data:
-        if apps.is_installed(app):
-            amodels = apps.get_models(app)
+        models = [a for a in app_config.get_models()] 
+        if models:
+            apps_data.append({"value":app_config.label, "display_name":app_config.name})
     return JsonResponse({"apps":apps_data})
 
 
 def get_models(request):
     app = request.GET.get('app')
-    app_configs = apps.get_app_configs()
-    for app_config in app_configs:
-        if app == app_config.label:
-            app = app_config.name
-    models = []
-    print(app)
-    if apps.is_installed(app):
-        amodels = apps.get_models(app)
-        for model in amodels:
-            models.append(model.__name__)
-    return JsonResponse({"models":models})
+    app_models = [model.__name__ for model in apps.get_app_config(app).get_models()]
+    return JsonResponse({"models":app_models})
 
 
 def get_model_fields(request):
@@ -84,22 +72,23 @@ def get_data(request):
 
     for app_config in app_configs:
         print(app_config.name)
-        amodels = apps.get_models(app_config)
+        amodels = [model for model in app_config.get_models()]
         app_models = []
-        for model in amodels:
-            d = {}
-            model_fields = []
-            fields = model._meta.get_fields()
-            for field in fields:
-                field_name = field.name
-                field_type = field.get_internal_type()
-                model_fields.append({"field": field_name, "type": field_type})
-                print("Field name:", field_name)
-                print("Field type:", field_type)
-            print(model.__name__)
-            d["model"] =  model.__name__
-            d["fields"] = model_fields
-            if d not in app_models:
-                app_models.append(d)
-        apps_data.append({"app_label":app_config.name, "models":app_models})
+        if amodels:
+            for model in amodels:
+                d = {}
+                model_fields = []
+                fields = model._meta.get_fields()
+                for field in fields:
+                    field_name = field.name
+                    field_type = field.get_internal_type()
+                    model_fields.append({"field": field_name, "type": field_type})
+                    print("Field name:", field_name)
+                    print("Field type:", field_type)
+                print(model.__name__)
+                d["model"] =  model.__name__
+                d["fields"] = model_fields
+                if d not in app_models:
+                    app_models.append(d)
+            apps_data.append({"app_label":app_config.name, "models":app_models})
     return JsonResponse({"apps":apps_data})
