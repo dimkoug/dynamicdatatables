@@ -36,6 +36,7 @@
               $.each(data.fields, function(index, value) {
                   $('#fields').append('<option value="' + value.field + '">' + value.field + '</option>');
               });
+              $('#fields').attr("size", data.fields.length);
               $('#fields').fadeIn('slow')
               $('label[for="fields"]').fadeIn('slow')
               $('#dtable').fadeIn('slow');
