@@ -21,14 +21,13 @@ from django.conf.urls.static import static
 
 from .views import IndexView
 
-from .utils import get_apps,get_models,get_model_fields
+from .utils import get_apps,get_models,get_model_fields, get_all_models
 from .viewsets import DynamicModelViewSet
 
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
-    path('apps/', get_apps, name='apps'),
-    path('models/', get_models, name='models'),
+    path('models/', get_all_models, name='models'),
     path('fields/', get_model_fields, name='fields'),
     path('dtables/', DynamicModelViewSet.as_view({'get':'retrieve'}), name='dtables'),
     path('admin/', admin.site.urls),

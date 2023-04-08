@@ -1,53 +1,31 @@
 'use strict';
 (function(w,d,$){
-    $('#apps, #models, #fields, #dtable,label[for="models"],label[for="fields"]').hide()
+    $('#models, #fields, #dtable,label[for="models"],label[for="fields"]').hide()
     $.when(
       $.ajax({
-            url: "/apps/",
+            url: "/models/",
             method: 'GET',
             datatype: 'json',
 
     })).then(function( data, textStatus, jqXHR ) {
-        $.each(data.apps, function(index, value) {
-            $('#apps').append('<option value="' + value + '">' + value + '</option>');
+        $.each(data.models, function(index, value) {
+            $('#models').append('<option value="' + value.key + '">' + value.name + '</option>');
         });
-        $('#apps').fadeIn('slow')
+        $('#models').fadeIn('slow')
+        $('label[for="models"]').fadeIn('slow')
     }).fail(function(err){
       alert(err["responseJSON"] ["details"]);
     });
-
-
-    $('#apps').on('change', function(e){
-        e.preventDefault();
-        $('#models,#fields').html('').fadeOut('slow');
-        $('label[for="models"],label[for="fields"]').fadeOut('slow')
-        let value = $(this).val();
-        console.info(value)
-        $.when(
-            $.ajax({
-                  url: "/models/",
-                  method: 'GET',
-                  datatype: 'json',
-                  data: {"app":value}
-            })).then(function( data, textStatus, jqXHR ) {
-              $.each(data.models, function(index, value) {
-                  $('#models').append('<option value="' + value + '">' + value + '</option>');
-              });
-              $('#models,label[for="models"]').fadeIn('slow')
-          }).fail(function(err){
-            alert(err["responseJSON"] ["details"]);
-          });
-    })
-
 
     $('#models').on('change', function(e){
         e.preventDefault();
         $('#fields').html('').fadeOut('slow');
         $('label[for="fields"]').fadeOut('slow')
         $('#dtable').fadeOut('slow');
-        let value = $(this).val();
-        let app = $("#apps").val();
+        let value = $(this).val().split('.')[1];
+        let app = $(this).val().split('.')[0];
         console.info(value)
+
         $.when(
             $.ajax({
                   url: "/fields/",
@@ -69,10 +47,10 @@
     })
 
     $('#dtable').on('click', function(e){
-        let app = $('#apps').val();
+        let app = $('#models').val().split('.')[0];
         let fields_data = [];
         let columns_data = []
-        let model = $('#models').val();
+        let model = $('#models').val().split('.')[1];
         let fields = $('#fields').val();
         for(let i=0;i<fields.length;i++){
             fields_data.push({"data":fields[i]})

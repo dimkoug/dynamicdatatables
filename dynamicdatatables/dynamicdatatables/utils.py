@@ -4,20 +4,43 @@ from django.http import JsonResponse
 
 
 
+def get_all_models(request):
+    all_models = apps.get_models()
+    models = []
+    for model in all_models:
+        # Access model attributes or perform actions with the model
+        print(model.__name__)  # Prints the name of the model
+        print(model._meta.app_label)  # Prints the app label of the model
+        print(model._meta.verbose_name)  # Prints the verbose name of the model
+        models.append({"key": str(model._meta.app_label) + '.' + model.__name__, "name":   model.__name__})
+    return JsonResponse({"models":models})
+
+
+
+
 def get_apps(request):
     app_configs = apps.get_app_configs()
     apps_data = []
     for app_config in app_configs:
         apps_data.append(app_config.label)
+    for app in apps_data:
+        if apps.is_installed(app):
+            amodels = apps.get_models(app)
     return JsonResponse({"apps":apps_data})
 
 
 def get_models(request):
     app = request.GET.get('app')
+    app_configs = apps.get_app_configs()
+    for app_config in app_configs:
+        if app == app_config.label:
+            app = app_config.name
     models = []
-    amodels = apps.get_models(app)
-    for model in amodels:
-        models.append(model.__name__)
+    print(app)
+    if apps.is_installed(app):
+        amodels = apps.get_models(app)
+        for model in amodels:
+            models.append(model.__name__)
     return JsonResponse({"models":models})
 
 
